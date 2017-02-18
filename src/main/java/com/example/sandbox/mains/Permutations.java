@@ -15,7 +15,7 @@ class Permutations {
 	}
 
 	static ArrayList<int[]> permutations(int[] a) {
-		ArrayList<int[]> ret = new ArrayList<int[]>();
+		ArrayList<int[]> ret = new ArrayList<>();
 		permutation(a, 0, ret);
 		return ret;
 	}

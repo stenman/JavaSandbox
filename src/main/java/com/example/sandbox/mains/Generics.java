@@ -8,7 +8,7 @@ public class Generics {
 	
 	public static void main(String[] args){
 		
-		List<CoffeeMaker> coffeeMakers = new ArrayList<CoffeeMaker>();
+		List<CoffeeMaker> coffeeMakers = new ArrayList<>();
 		List<? extends CoffeeMaker> something = coffeeMakers;
 	}
 }

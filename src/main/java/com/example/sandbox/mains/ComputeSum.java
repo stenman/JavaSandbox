@@ -9,7 +9,7 @@ public class ComputeSum {
 	// compute the sum of the numbers in a given list
 	// using a for-loop, a while-loop, and recursion.
 
-	private List<Integer> numbers = new ArrayList<Integer>();
+	private List<Integer> numbers = new ArrayList<>();
 
 	public void compute() {
 		numbers.add(5);

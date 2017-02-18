@@ -15,7 +15,7 @@ public class Fibonacci {
 	}
 
 	private List<BigInteger> calculate(int num) {
-		List<BigInteger> list = new ArrayList<BigInteger>();
+		List<BigInteger> list = new ArrayList<>();
 		list.add(new BigInteger("0"));
 		BigInteger fibox = new BigInteger("0");
 		BigInteger fibo1 = new BigInteger("0");

@@ -98,7 +98,7 @@ public class Lists {
 	private static List<Integer> createArrayList(int max, int adjustTimeScale, String timeScale) {
 		long startTime;
 		long endTime;
-		List<Integer> al = new ArrayList<Integer>();
+		List<Integer> al = new ArrayList<>();
 		startTime = System.nanoTime();
 		for (int i = 0; i < max; i++) {
 			al.add(i);
@@ -111,7 +111,7 @@ public class Lists {
 	private static List<Integer> createLinkedList(int max, int adjustTimeScale, String timeScale) {
 		long startTime;
 		long endTime;
-		List<Integer> ll = new LinkedList<Integer>();
+		List<Integer> ll = new LinkedList<>();
 		startTime = System.nanoTime();
 		for (int i = 0; i < max; i++) {
 			ll.add(i);

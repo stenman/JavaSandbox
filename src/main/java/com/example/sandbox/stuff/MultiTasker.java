@@ -8,7 +8,7 @@ public class MultiTasker implements Runnable {
 	public void run() {
 		Random r = new Random();
 
-		int sleep = 0;
+		int sleep;
 
 		try {
 			for (int i = 0; i < 10; i++) {
