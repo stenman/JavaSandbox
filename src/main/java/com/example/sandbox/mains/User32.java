@@ -6,31 +6,31 @@ import com.sun.jna.win32.StdCallLibrary;
 import com.sun.jna.win32.W32APIOptions;
 
 /**
- * Created by stenman on 2017-05-28.
+ * Windows specific mapping interface
+ * For more information, see the following links:
+ * https://msdn.microsoft.com/en-us/library/ms646309%28VS.85%29.aspx
+ * https://msdn.microsoft.com/en-us/library/ms684242%28VS.85%29.aspx
  */
 public interface User32 extends StdCallLibrary {
     User32 INSTANCE = (User32) Native.loadLibrary("User32", User32.class, W32APIOptions.UNICODE_OPTIONS);
 
-
     // dwWakeMask Constants
-    public static final int QS_ALLEVENTS = 0x04BF;
-    public static final int QS_ALLINPUT = 0x04FF;
-    public static final int QS_ALLPOSTMESSAGE = 0x0100;
-    public static final int QS_HOTKEY = 0x0080;
-    public static final int QS_INPUT = 0x407;
-    public static final int QS_KEY = 0x0001;
-    public static final int QS_MOUSE = 0x0006;
-    public static final int QS_MOUSEBUTTON = 0x0004;
-    public static final int QS_MOUSEMOVE = 0x0002;
-    public static final int QS_PAINT = 0x0020;
-    public static final int QS_POSTMESSAGE = 0x0008;
-    public static final int QS_RAWINPUT = 0x0400;
-    public static final int QS_SENDMESSAGE = 0x0040;
-    public static final int QS_TIMER = 0x0010;
+    int QS_ALLEVENTS = 0x04BF;
+    int QS_ALLINPUT = 0x04FF;
+    int QS_ALLPOSTMESSAGE = 0x0100;
+    int QS_HOTKEY = 0x0080;
+    int QS_INPUT = 0x407;
+    int QS_KEY = 0x0001;
+    int QS_MOUSE = 0x0006;
+    int QS_MOUSEBUTTON = 0x0004;
+    int QS_MOUSEMOVE = 0x0002;
+    int QS_PAINT = 0x0020;
+    int QS_POSTMESSAGE = 0x0008;
+    int QS_RAWINPUT = 0x0400;
+    int QS_SENDMESSAGE = 0x0040;
+    int QS_TIMER = 0x0010;
 
-
-    public static final int INFINITE = 0xFFFFFFFF;
-
+    int INFINITE = 0xFFFFFFFF;
 
     /*
     DWORD WINAPI MsgWaitForMultipleObjects(
@@ -40,18 +40,14 @@ public interface User32 extends StdCallLibrary {
     __in  DWORD dwMilliseconds,
     __in  DWORD dwWakeMask
     );*/
-
-
     int MsgWaitForMultipleObjects(int nCount, Pointer pHandles, boolean bWaitAll, int dwMilliSeconds, int dwWakeMask);
 
-
-    /* fsModifiers vaues */
-    public static final int MOD_ALT = 0x0001;
-    public static final int MOD_CONTROL = 0x0002;
-    public static final int MOD_NOREPEAT = 0x4000;
-    public static final int MOD_SHIFT = 0x0004;
-    public static final int MOD_WIN = 0x0008;
-
+    // fsModifiers vaues
+    int MOD_ALT = 0x0001;
+    int MOD_CONTROL = 0x0002;
+    int MOD_NOREPEAT = 0x4000;
+    int MOD_SHIFT = 0x0004;
+    int MOD_WIN = 0x0008;
 
     /* BOOL WINAPI RegisterHotKey(
     __in_opt  HWND hWnd,
