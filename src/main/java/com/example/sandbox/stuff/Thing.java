@@ -25,4 +25,8 @@ public class Thing {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String toString() {
+        return String.format("%s %s", getId(), getName());
+    }
 }

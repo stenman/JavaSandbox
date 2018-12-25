@@ -5,6 +5,8 @@
 /target/
 
 *.log
+credentials.json
 
 .project
 .settings
+tokens/
