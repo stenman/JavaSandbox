@@ -1,32 +1,37 @@
 package com.example.sandbox.mains;
 
-import com.example.sandbox.stuff.Thing;
-
 import java.io.IOException;
-import java.math.BigInteger;
+import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-
-import static java.util.Arrays.asList;
+import java.util.Locale;
 
 public class GeneralTest {
 
     public static void main(String[] args) throws IOException {
-//        for (int i = 1; i < 40; i++) {
-//            System.out.println(i + ": " + faculty(i));
-//        }
-        System.out.println(faculty(BigInteger.valueOf(2)));
-    }
+        List<Integer> integersArray = new ArrayList<>();
 
-    private static BigInteger faculty(BigInteger n) {
-        if (n == BigInteger.ONE) {
-            return BigInteger.ONE;
-        } else {
-            return (faculty(n.subtract(BigInteger.ONE)));
+        for (int i = 0; i < 10000000; i++) {
+            integersArray.add(i);
+            if (i % 1000000 == 0) {
+                System.out.println(i);
+            }
         }
+        System.out.println("Size: " + NumberFormat.getNumberInstance(Locale.US).format(integersArray.size()));
+        System.out.println("Get element: " + integersArray.get(5000000));
+        System.out.println("Now, let's try a linked list!");
+
+        List<Integer> integersLinked = new LinkedList<>();
+
+        for (int i = 0; i < 10000000; i++) {
+            integersLinked.add(i);
+            if (i % 1000000 == 0) {
+                System.out.println(i);
+            }
+        }
+        System.out.println("Size: " + NumberFormat.getNumberInstance(Locale.US).format(integersLinked.size()));
+        System.out.println("Get element: " + integersLinked.get(5000000));
+
     }
 }
