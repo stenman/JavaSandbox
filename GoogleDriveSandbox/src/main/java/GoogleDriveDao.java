@@ -10,14 +10,15 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GoogleDriveDao {
     private static final String APPLICATION_NAME = "EconoStats";
@@ -64,17 +65,45 @@ public class GoogleDriveDao {
         return service;
     }
 
-    // 1. sök efter mapp "EconoStats", returnera String (Id)
-    public String searchFile(String name) throws IOException, GeneralSecurityException {
-        String queryParam = "modifiedTime > '2012-06-04T12:00:00' and (mimeType contains 'json') and trashed = false";
-        com.google.api.services.drive.Drive.Files.List qry = getService().files().list().setFields("files(id, name)").setQ(queryParam);
-        com.google.api.services.drive.model.FileList gLst = qry.execute();
-        for (com.google.api.services.drive.model.File gFl : gLst.getFiles()) {
-            System.out.println("ID==>" + gFl.getId() + "    Name: " + gFl.getName());
-        }
-        return null;
+    // 1. skapa mapp "EconoStats", returnera String (Id)
+    public String createFolder(String name) throws IOException, GeneralSecurityException {
+        File fileMetadata = new File();
+        fileMetadata.setName(name);
+        fileMetadata.setMimeType("application/vnd.google-apps.folder");
+
+        File file = getService().files().create(fileMetadata)
+                .setFields("id")
+                .execute();
+        return file.getId();
     }
-    // 2. skapa mapp "EconoStats", returnera String (Id)
-    // 3. Hämta JSON från mapp "EconoStats", returnera String (Id)
+
+    // 2. sök efter mapp "EconoStats", returnera String (Id)
+    public List<String> searchFile(String name) throws IOException, GeneralSecurityException {
+        String pageToken = null;
+        List<String> fileList = new ArrayList<>();
+        do {
+            FileList result = getService().files().list()
+                    .setQ("mimeType = 'application/vnd.google-apps.folder' and trashed = false")
+                    .setSpaces("drive")
+                    .setFields("nextPageToken, files(id, name, parents)")
+                    .setPageToken(pageToken)
+                    .execute();
+            fileList.addAll(result.getFiles().stream().map(d -> d.getName()).collect(Collectors.toList()));
+//            for (com.google.api.services.drive.model.File file : result.getFiles()) {
+//                System.out.printf("Found file: %s (%s)\n", file.getName(), file.getId());
+//            }
+            pageToken = result.getNextPageToken();
+        } while (pageToken != null);
+
+        return fileList;
+    }
+
+    // 3. Hämta JSON från mapp "EconoStats", returnera String (OutputStream?)
+    public String getFile(String fileId) throws IOException, GeneralSecurityException {
+        OutputStream outputStream = new ByteArrayOutputStream();
+        getService().files().get(fileId)
+                .executeMediaAndDownloadTo(outputStream);
+        return outputStream.toString();
+    }
     // 4. Spara/Skriv över ändringar i JSON i mapp "EconoStats" (Är det någon skillnad här?)
 }
