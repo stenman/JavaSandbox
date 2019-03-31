@@ -4,6 +4,7 @@ import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.FileContent;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -15,9 +16,7 @@ import com.google.api.services.drive.model.FileList;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GoogleDriveDao {
@@ -25,13 +24,15 @@ public class GoogleDriveDao {
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
 
+    public static final String APPLICATION_VND_GOOGLE_APPS_FOLDER = "application/vnd.google-apps.folder";
+    public static final String APPLICATION_VND_GOOGLE_APPS_FILE = "application/json";
+
     /**
      * Global instance of the scopes required by this quickstart.
      * If modifying these scopes, delete your previously saved tokens/ folder.
      */
     private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE_FILE);
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
-    private static final String CREDENTIALS_FILE_PATH2 = "C:/Users/Gildur/workspace/JavaSandbox/GoogleDriveSandbox/src/main/resources/credentials.json";
 
     /**
      * Creates an authorized Credential object.
@@ -42,7 +43,6 @@ public class GoogleDriveDao {
      */
     private Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
         // Load client secrets.
-//        InputStream in = new FileInputStream(CREDENTIALS_FILE_PATH);
         InputStream in = GoogleDriveDao.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
@@ -65,11 +65,10 @@ public class GoogleDriveDao {
         return service;
     }
 
-    // 1. skapa mapp "EconoStats", returnera String (Id)
     public String createFolder(String name) throws IOException, GeneralSecurityException {
         File fileMetadata = new File();
         fileMetadata.setName(name);
-        fileMetadata.setMimeType("application/vnd.google-apps.folder");
+        fileMetadata.setMimeType(APPLICATION_VND_GOOGLE_APPS_FOLDER);
 
         File file = getService().files().create(fileMetadata)
                 .setFields("id")
@@ -77,33 +76,55 @@ public class GoogleDriveDao {
         return file.getId();
     }
 
-    // 2. sök efter mapp "EconoStats", returnera String (Id)
-    public List<String> searchFile(String name) throws IOException, GeneralSecurityException {
+    public String createFile(List<String> parents) throws IOException, GeneralSecurityException {
+        File fileMetadata = new File();
+        fileMetadata.setName("transactions.json");
+        fileMetadata.setParents(parents);
+        fileMetadata.setMimeType(APPLICATION_VND_GOOGLE_APPS_FILE);
+
+        java.io.File filePath = new java.io.File("GoogleDriveSandbox/src/main/resources/transactions.json");
+        FileContent mediaContent = new FileContent("application/json", filePath);
+
+        File file = getService().files().create(fileMetadata, mediaContent)
+                .setFields("id")
+                .execute();
+        return file.getId();
+    }
+
+    public void updateFile(String fileId) throws IOException, GeneralSecurityException {
+        File existingFile = getService().files().get(fileId).execute();
+        File fileMetadata = new File();
+        fileMetadata.setName(existingFile.getName());
+        fileMetadata.setParents(existingFile.getParents());
+        fileMetadata.setMimeType(existingFile.getMimeType());
+
+        java.io.File filePath = new java.io.File("GoogleDriveSandbox/src/main/resources/transactions.json");
+        FileContent mediaContent = new FileContent("application/json", filePath);
+
+        getService().files().update(fileId, fileMetadata, mediaContent).execute();
+    }
+
+    public List<String> searchForFile(String name, String mimeType) throws IOException, GeneralSecurityException {
         String pageToken = null;
-        List<String> fileList = new ArrayList<>();
+        List<String> items = new ArrayList<>();
         do {
             FileList result = getService().files().list()
-                    .setQ("mimeType = 'application/vnd.google-apps.folder' and trashed = false")
+                    .setQ("mimeType = '" + mimeType + "' and trashed = false")
                     .setSpaces("drive")
                     .setFields("nextPageToken, files(id, name, parents)")
                     .setPageToken(pageToken)
                     .execute();
-            fileList.addAll(result.getFiles().stream().map(d -> d.getName()).collect(Collectors.toList()));
-//            for (com.google.api.services.drive.model.File file : result.getFiles()) {
-//                System.out.printf("Found file: %s (%s)\n", file.getName(), file.getId());
-//            }
+            items.addAll(result.getFiles().stream().filter(d -> d.getName().equals(name)).map(File::getId).collect(Collectors.toList()));
             pageToken = result.getNextPageToken();
         } while (pageToken != null);
 
-        return fileList;
+        return items;
     }
 
-    // 3. Hämta JSON från mapp "EconoStats", returnera String (OutputStream?)
     public String getFile(String fileId) throws IOException, GeneralSecurityException {
         OutputStream outputStream = new ByteArrayOutputStream();
         getService().files().get(fileId)
                 .executeMediaAndDownloadTo(outputStream);
         return outputStream.toString();
     }
-    // 4. Spara/Skriv över ändringar i JSON i mapp "EconoStats" (Är det någon skillnad här?)
 }
