@@ -37,7 +37,7 @@ public class StreamsExperiment {
         System.out.println(numbersToPrint);
     }
 
-    private static void print(List list) {
+    private static void print(List<Thing> list) {
         Consumer<Thing> printStyle = (Thing t) -> System.out.println("id:" + t.getId() + ", Name:" + t.getName());
         list.forEach(printStyle);
     }

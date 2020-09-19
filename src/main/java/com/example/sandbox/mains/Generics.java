@@ -5,10 +5,10 @@ import java.util.List;
 
 public class Generics {
 
-	
-	public static void main(String[] args){
-		
-		List<CoffeeMaker> coffeeMakers = new ArrayList<>();
-		List<? extends CoffeeMaker> something = coffeeMakers;
-	}
+    public static void main(String[] args) {
+
+        List<CoffeeMaker> coffeeMakers = new ArrayList<>();
+        @SuppressWarnings("unused")
+        List<? extends CoffeeMaker> something = coffeeMakers;
+    }
 }
