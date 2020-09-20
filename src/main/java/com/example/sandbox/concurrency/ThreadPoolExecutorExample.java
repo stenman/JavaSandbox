@@ -23,6 +23,7 @@ public class ThreadPoolExecutorExample {
     public static void main(String args[]) throws InterruptedException {
         // Get the ThreadFactory implementation to use
         ThreadFactory threadFactory = Executors.defaultThreadFactory();
+
         // creating the ThreadPoolExecutor
         ThreadPoolExecutor executorPool = new ThreadPoolExecutor(2, 4, 10, TimeUnit.SECONDS,
                 new ArrayBlockingQueue<Runnable>(20), threadFactory);
@@ -33,6 +34,7 @@ public class ThreadPoolExecutorExample {
         }
 
         Thread.sleep(30000);
+
         // shut down the pool
         executorPool.shutdown();
     }
