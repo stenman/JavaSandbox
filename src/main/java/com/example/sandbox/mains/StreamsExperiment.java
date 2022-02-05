@@ -46,7 +46,7 @@ public class StreamsExperiment {
         stuffs.addAll(asList(stuff1, stuff2));
         System.out.println(stuffs);
 
-        // Gör om detta till en lista av Thing.
+        // Gör om detta till en lista av Thing
         List<Thing> things = new ArrayList<>();
 
         things = stuffs.stream().map(d -> new Thing((int) d.get("id"), (String) d.get("name"))).collect(toList());
